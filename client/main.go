@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/adk-saugat/stash/commands"
 )
 
 func main() {
@@ -13,9 +15,11 @@ func main() {
 	
 	switch (os.Args[1]){
 	case "login":
-		fmt.Println("login")
+		commands.Login()
 	case "register":
-		fmt.Println("register")
+		commands.Register()
+	case "create":
+		commands.Create()
 	case "help":
 		fmt.Println("help")
 	default:
