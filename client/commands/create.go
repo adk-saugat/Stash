@@ -3,63 +3,32 @@ package commands
 import (
 	"log"
 	"os"
-	"strings"
 
 	"github.com/adk-saugat/stash/models"
+	"github.com/adk-saugat/stash/utils"
 )
 
-func Create(){
+func Create() {
 	// creating the .stash folder
-	exists, err := folderExists(".stash")
+	err := utils.EnsureFolderExists(".stash")
 	if err != nil {
-		log.Fatal("Error: Couldnot check folders existence.")
-	}
-
-	if !exists {
-		err = os.Mkdir(".stash", 0755)
-		if err != nil {
-			log.Fatal("Error: Couldnot create folder.")
-		}
+		log.Fatal("Error: Couldnot check or create folder.")
 	}
 
 	// creating the store folder
-	exists, err = folderExists(".stash/store")
+	err = utils.EnsureFolderExists(".stash/store")
 	if err != nil {
-		log.Fatal("Error: Couldnot check folders existence.")
-	}
-
-	if !exists {
-		err = os.Mkdir("./.stash/store", 0755)
-		if err != nil {
-			log.Fatal("Error: Couldnot create.")
-		}
+		log.Fatal("Error: Couldnot check or create folder.")
 	}
 
 	// check if project name added if not default to the directory name
-	if len(os.Args) < 3 || os.Args[2] == "" {
-		currDir, err := os.Getwd()
-		if err != nil {
-			log.Fatal("Error: Could not access current directory.")
-		}
-		currDirSlice := strings.Split(currDir, "/")
-		projectName := currDirSlice[len(currDirSlice)-1]
-		config := models.NewConfig(projectName, "owner")
-		config.Create()
-		return
+	var projectName string
+	if len(os.Args) >= 3 && os.Args[2] != "" {
+		projectName = os.Args[2]
+	} else {
+		projectName = utils.GetCurrentDirName()
 	}
 
-	// fmt.Println("project-name added")
-	config := models.NewConfig(os.Args[2], "owner")
+	config := models.NewConfig(projectName, "owner")
 	config.Create()
-}
-
-func folderExists(path string) (bool, error) {
-	info, err := os.Stat(path)
-	if err == nil {
-		return info.IsDir(), nil 
-	}
-	if os.IsNotExist(err) {
-		return false, nil 
-	}
-	return false, err 
 }

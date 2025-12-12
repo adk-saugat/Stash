@@ -5,7 +5,7 @@ import "fmt"
 type User struct{
 	ID 			int64 	`json:"id"`
 	Email 		string 	`json:"email"`
-	Password 	string	`json:"password`	
+	Password 	string	`json:"password"`	
 }
 
 func NewUser(id int64, email string, password string) *User {
