@@ -12,6 +12,7 @@ func main() {
 	if len(os.Args) < 2{
 		log.Fatal("no commands found")
 	}
+	fmt.Println(os.Args)
 	
 	switch (os.Args[1]){
 	case "login":
