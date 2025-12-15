@@ -33,9 +33,7 @@ func NewConfig(projectName string, role string) *Config{
 	}
 }
 
-func (config *Config) Create(){
-	fmt.Println("Config file created!")
-
+func (config *Config) Create(){	
 	configFile , err := os.Create(".stash/config.json")
 	if err != nil {
 		log.Fatal("Error: Couldnot create config file.")
@@ -50,4 +48,6 @@ func (config *Config) Create(){
 	if err != nil {
 		log.Fatal("Error: Couldnot write config to file.")
 	}
+
+	fmt.Println("Config file created!")
 }

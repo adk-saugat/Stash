@@ -11,13 +11,16 @@ import (
 func Create() {
 	// creating the .stash folder
 	err := utils.EnsureFolderExists(".stash")
+	if err == os.ErrExist {
+		log.Fatal("Error: Project already exists. Cannot create a new project in an existing stash repository.")
+	}
 	if err != nil {
 		log.Fatal("Error: Couldnot check or create folder.")
 	}
 
 	// creating the store folder
 	err = utils.EnsureFolderExists(".stash/store")
-	if err != nil {
+	if err != nil && err != os.ErrExist {
 		log.Fatal("Error: Couldnot check or create folder.")
 	}
 
