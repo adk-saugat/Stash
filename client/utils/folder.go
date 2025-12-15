@@ -36,3 +36,7 @@ func FolderExists(path string) (bool, error) {
 	return false, err
 }
 
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}

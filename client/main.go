@@ -21,6 +21,8 @@ func main() {
 		commands.Register()
 	case "create":
 		commands.Create()
+	case "watch":
+		commands.Watch()
 	case "help":
 		fmt.Println("help")
 	default:

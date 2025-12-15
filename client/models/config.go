@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/adk-saugat/stash/utils"
 )
 
 type Config struct{
@@ -30,6 +32,30 @@ func NewConfig(projectName string, role string) *Config{
 		ProjectName: projectName,
 		TrackedFile: make([]string, 0),
 		Role: "owner",
+	}
+}
+
+func (config *Config) AddFileToTrack(fileToTrack string){
+	exists := utils.FileExists(fileToTrack)
+	if !exists {
+		log.Fatalf("Error: File not found: %s. Please verify the file path and ensure the file exists.", fileToTrack)
+	}
+
+	config.TrackedFile = append(config.TrackedFile, fileToTrack)
+	configJSON, err := json.MarshalIndent(config, "", "    ")
+	if err != nil {
+		log.Fatal("Error: Couldnot convert config to JSON.")
+	}
+
+	configFile, err := os.OpenFile("./.stash/config.json", os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatal("Error: Couldnot open config file.")
+	}
+	defer configFile.Close()
+
+	_, err = configFile.Write(configJSON)
+	if err != nil {
+		log.Fatal("Error: Couldnot write config to file.")
 	}
 }
 
