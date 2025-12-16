@@ -35,13 +35,16 @@ func NewConfig(projectName string, role string) *Config{
 	}
 }
 
-func (config *Config) AddFileToTrack(fileToTrack string){
-	exists := utils.FileExists(fileToTrack)
-	if !exists {
-		log.Fatalf("Error: File not found: %s. Please verify the file path and ensure the file exists.", fileToTrack)
+func (config *Config) AddFileToTrack(filesToTrack []string){
+	for _, file := range filesToTrack {
+		if !utils.FileExists(file) {
+			log.Fatalf("Error: File not found: %s. Please verify the file path and ensure the file exists.", file)
+		}
+		// Only add if not already tracked
+		if !config.isTracked(file) {
+			config.TrackedFile = append(config.TrackedFile, file)
+		}
 	}
-
-	config.TrackedFile = append(config.TrackedFile, fileToTrack)
 	configJSON, err := json.MarshalIndent(config, "", "    ")
 	if err != nil {
 		log.Fatal("Error: Couldnot convert config to JSON.")
@@ -57,6 +60,15 @@ func (config *Config) AddFileToTrack(fileToTrack string){
 	if err != nil {
 		log.Fatal("Error: Couldnot write config to file.")
 	}
+}
+
+func (config *Config) isTracked(file string) bool {
+	for _, tracked := range config.TrackedFile {
+		if tracked == file {
+			return true
+		}
+	}
+	return false
 }
 
 func (config *Config) Create(){	
