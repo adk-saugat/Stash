@@ -1,9 +1,9 @@
 {
-    "projectId": "9628d482-935b-45a6-a9b3-f79794d0dd5c",
+    "projectId": "f61c212c-ee81-4e5d-883c-557ce9a9d81b",
     "projectName": "test",
     "trackedFile": [
-        "test.py",
-        "version1/v1.py"
+        "db.py",
+        "main.py"
     ],
     "role": "owner"
 }

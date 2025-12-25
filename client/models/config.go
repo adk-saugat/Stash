@@ -18,6 +18,15 @@ type Config struct{
 	Role 			string 		`json:"role"`
 }
 
+func ConfigFromJSON(data []byte) (*Config, error) {
+	var conf Config
+	err := json.Unmarshal(data, &conf)
+	if err != nil {
+		return nil, err
+	}
+	return &conf, nil
+}
+
 func NewConfig(projectName string, role string) *Config{
 
 	projectIdBytes, err := exec.Command("uuidgen").Output()

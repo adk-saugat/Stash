@@ -24,7 +24,7 @@ func EnsureFolderExists(path string) error {
 	return nil
 }
 
-// checks if a folder exists at the given path
+// FolderExists checks if a folder exists at the given path
 func FolderExists(path string) (bool, error) {
 	info, err := os.Stat(path)
 	if err == nil {
@@ -34,9 +34,4 @@ func FolderExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
-}
-
-func FileExists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil
 }

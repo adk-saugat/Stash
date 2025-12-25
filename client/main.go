@@ -2,30 +2,36 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/adk-saugat/stash/commands"
+	"github.com/adk-saugat/stash/core"
 )
 
 func main() {
-	if len(os.Args) < 2{
-		log.Fatal("no commands found")
+	registry := core.NewRegistry()
+
+	registry.Register(&commands.LoginCommand{})
+	registry.Register(&commands.CreateCommand{})
+	registry.Register(&commands.WatchCommand{})
+	registry.Register(&commands.StoreCommand{})
+	registry.Register(commands.NewHelpCommand(registry))
+
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: stash <command> [args]")
+		fmt.Println("Run 'stash help' for available commands.")
+		os.Exit(1)
 	}
-	fmt.Println(os.Args)
-	
-	switch (os.Args[1]){
-	case "login":
-		commands.Login()
-	case "register":
-		commands.Register()
-	case "create":
-		commands.Create()
-	case "watch":
-		commands.Watch()
-	case "help":
-		fmt.Println("help")
-	default:
-		log.Fatal("no command found... use help for command info")
+
+	cmd, found := registry.Get(os.Args[1])
+	if !found {
+		fmt.Printf("Unknown command: %s\n", os.Args[1])
+		fmt.Println("Run 'stash help' for available commands.")
+		os.Exit(1)
+	}
+
+	if err := cmd.Run(os.Args[2:]); err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
 	}
 }

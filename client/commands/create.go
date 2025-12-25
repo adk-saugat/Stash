@@ -1,37 +1,38 @@
 package commands
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/adk-saugat/stash/models"
 	"github.com/adk-saugat/stash/utils"
 )
 
-func Create() {
+type CreateCommand struct{}
+
+func (c *CreateCommand) Name() string        { return "create" }
+func (c *CreateCommand) Description() string { return "Create a new stash project" }
+
+func (c *CreateCommand) Run(args []string) error {
 	// creating the .stash folder
 	err := utils.EnsureFolderExists(".stash")
 	if err == os.ErrExist {
-		log.Fatal("Error: Project already exists. Cannot create a new project in an existing stash repository.")
+		return fmt.Errorf("project already exists. Cannot create a new project in an existing stash repository")
 	}
 	if err != nil {
-		log.Fatal("Error: Couldnot check or create folder.")
+		return fmt.Errorf("could not check or create folder")
 	}
 
 	// creating the store folder
 	err = utils.EnsureFolderExists(".stash/store")
 	if err != nil && err != os.ErrExist {
-		log.Fatal("Error: Couldnot check or create folder.")
+		return fmt.Errorf("could not check or create store folder")
 	}
 
 	// check if project name added if not default to the directory name
-	var projectName string
-	if len(os.Args) >= 3 && os.Args[2] != "" {
-		projectName = os.Args[2]
-	} else {
-		projectName = utils.GetCurrentDirName()
-	}
+	projectName := utils.GetArgOrDefault(args, 0, utils.GetCurrentDirName())
 
 	config := models.NewConfig(projectName, "owner")
 	config.Create()
+	return nil
 }
