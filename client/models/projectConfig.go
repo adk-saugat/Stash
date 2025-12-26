@@ -11,23 +11,23 @@ import (
 	"github.com/adk-saugat/stash/utils"
 )
 
-type Config struct{
+type ProjectConfig struct{
 	ProjectId 		string 		`json:"projectId"`
 	ProjectName 	string 		`json:"projectName"`
 	TrackedFile 	[]string 	`json:"trackedFile"`
 	Role 			string 		`json:"role"`
 }
 
-func ConfigFromJSON(data []byte) (*Config, error) {
-	var conf Config
-	err := json.Unmarshal(data, &conf)
+func ProjectConfigFromJSON(data []byte) (*ProjectConfig, error) {
+	var pc ProjectConfig
+	err := json.Unmarshal(data, &pc)
 	if err != nil {
 		return nil, err
 	}
-	return &conf, nil
+	return &pc, nil
 }
 
-func NewConfig(projectName string, role string) *Config{
+func NewProjectConfig(projectName string, role string) *ProjectConfig{
 
 	projectIdBytes, err := exec.Command("uuidgen").Output()
 	if err != nil {
@@ -36,7 +36,7 @@ func NewConfig(projectName string, role string) *Config{
 	projectId := strings.ToLower(strings.TrimSpace(string(projectIdBytes)))
 
 
-	return &Config{
+	return &ProjectConfig{
 		ProjectId: string(projectId),
 		ProjectName: projectName,
 		TrackedFile: make([]string, 0),
@@ -44,35 +44,35 @@ func NewConfig(projectName string, role string) *Config{
 	}
 }
 
-func (config *Config) AddFileToTrack(filesToTrack []string){
+func (pc *ProjectConfig) AddFileToTrack(filesToTrack []string){
 	for _, file := range filesToTrack {
 		if !utils.FileExists(file) {
 			log.Fatalf("Error: File not found: %s. Please verify the file path and ensure the file exists.", file)
 		}
 		// Only add if not already tracked
-		if !config.isTracked(file) {
-			config.TrackedFile = append(config.TrackedFile, file)
+		if !pc.isTracked(file) {
+			pc.TrackedFile = append(pc.TrackedFile, file)
 		}
 	}
-	configJSON, err := json.MarshalIndent(config, "", "    ")
+	projectConfigJSON, err := json.MarshalIndent(pc, "", "    ")
 	if err != nil {
 		log.Fatal("Error: Couldnot convert config to JSON.")
 	}
 
-	configFile, err := os.OpenFile("./.stash/config.json", os.O_WRONLY|os.O_TRUNC, 0644)
+	projectConfigFile, err := os.OpenFile("./.stash/projectConfig.json", os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Fatal("Error: Couldnot open config file.")
 	}
-	defer configFile.Close()
+	defer projectConfigFile.Close()
 
-	_, err = configFile.Write(configJSON)
+	_, err = projectConfigFile.Write(projectConfigJSON)
 	if err != nil {
 		log.Fatal("Error: Couldnot write config to file.")
 	}
 }
 
-func (config *Config) isTracked(file string) bool {
-	for _, tracked := range config.TrackedFile {
+func (pc *ProjectConfig) isTracked(file string) bool {
+	for _, tracked := range pc.TrackedFile {
 		if tracked == file {
 			return true
 		}
@@ -80,21 +80,22 @@ func (config *Config) isTracked(file string) bool {
 	return false
 }
 
-func (config *Config) Create(){	
-	configFile , err := os.Create(".stash/config.json")
+func (pc *ProjectConfig) Create(){	
+	projectConfigFile , err := os.Create(".stash/projectConfig.json")
 	if err != nil {
 		log.Fatal("Error: Couldnot create config file.")
 	}
 
-	configJSON, err := json.MarshalIndent(config, "", "    ")
+	projectConfigJSON, err := json.MarshalIndent(pc, "", "    ")
 	if err != nil {
 		log.Fatal("Error: Couldnot convert config to JSON.")
 	}
 
-	_, err = configFile.Write(configJSON)
+	_, err = projectConfigFile.Write(projectConfigJSON)
 	if err != nil {
 		log.Fatal("Error: Couldnot write config to file.")
 	}
 
-	fmt.Println("Config file created!")
+	fmt.Println("Project config file created!")
 }
+

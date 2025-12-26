@@ -21,18 +21,18 @@ func (c *StoreCommand) Run(args []string) error {
 
 	// storeMessage := args[0]
 
-	fileData, err := utils.GetFileData(".stash/config.json")
+	projectConfigBytes, err := utils.GetFileData(".stash/projectConfig.json")
 	if err != nil {
 		return fmt.Errorf("could not read config. Run 'stash create' first")
 	}
 
-	configData, err := models.ConfigFromJSON(fileData)
+	projectConfig, err := models.ProjectConfigFromJSON(projectConfigBytes)
 	if err != nil {
 		return fmt.Errorf("could not parse config")
 	}
 
 	storeFiles := make([]models.File, 0)
-	for _, filePath := range configData.TrackedFile {
+	for _, filePath := range projectConfig.TrackedFile {
 		fileData, err := utils.GetFileData(filePath)
 		if err != nil {
 			return fmt.Errorf("could not read file: %s", filePath)
@@ -45,5 +45,8 @@ func (c *StoreCommand) Run(args []string) error {
 	}
 
 	fmt.Printf("Stored %d files\n", len(storeFiles))
+
+	// TODO: Create a store struct and add the store to the .stash.
+	
 	return nil
 }

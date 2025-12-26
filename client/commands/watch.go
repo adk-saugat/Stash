@@ -22,14 +22,14 @@ func (c *WatchCommand) Run(args []string) error {
 		return fmt.Errorf("%w\n\tUsage: stash watch <file|all>", err)
 	}
 
-	// read config file
-	configByteData, err := utils.GetFileData("./.stash/config.json")
+	// read project config file
+	projectConfigBytes, err := utils.GetFileData("./.stash/projectConfig.json")
 	if err != nil {
 		return fmt.Errorf("config file not found. Run 'stash create' first")
 	}
 
-	var configData *models.Config
-	err = json.Unmarshal(configByteData, &configData)
+	var projectConfig *models.ProjectConfig
+	err = json.Unmarshal(projectConfigBytes, &projectConfig)
 	if err != nil {
 		return fmt.Errorf("could not unmarshal config data")
 	}
@@ -37,7 +37,7 @@ func (c *WatchCommand) Run(args []string) error {
 	// check if all the files are to be tracked
 	if strings.ToLower(fileToTrack) == "all" {
 		allFilesToTrack := watchAllFiles()
-		configData.AddFileToTrack(allFilesToTrack)
+		projectConfig.AddFileToTrack(allFilesToTrack)
 	} else {
 		// Check if the path is a directory
 		isDir, err := utils.FolderExists(fileToTrack)
@@ -48,13 +48,13 @@ func (c *WatchCommand) Run(args []string) error {
 		if isDir {
 			// If it's a directory, walk through it to get all files
 			filesToTrack := watchDirectory(fileToTrack)
-			configData.AddFileToTrack(filesToTrack)
+			projectConfig.AddFileToTrack(filesToTrack)
 		} else {
 			// Check if file exists
 			if !utils.FileExists(fileToTrack) {
 				return fmt.Errorf("file not found: %s", fileToTrack)
 			}
-			configData.AddFileToTrack([]string{fileToTrack})
+			projectConfig.AddFileToTrack([]string{fileToTrack})
 		}
 	}
 

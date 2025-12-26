@@ -32,7 +32,7 @@ func (c *CreateCommand) Run(args []string) error {
 	// check if project name added if not default to the directory name
 	projectName := utils.GetArgOrDefault(args, 0, utils.GetCurrentDirName())
 
-	config := models.NewConfig(projectName, "owner")
-	config.Create()
+	projectConfig := models.NewProjectConfig(projectName, "owner")
+	projectConfig.Create()
 	return nil
 }
