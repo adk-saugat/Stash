@@ -22,3 +22,8 @@ func GetFileData(path string) ([]byte, error) {
 	}
 	return data, nil
 }
+
+// WriteFileData writes data to a file, creating it if it doesn't exist
+func WriteFileData(path string, data []byte) error {
+	return os.WriteFile(path, data, 0644)
+}

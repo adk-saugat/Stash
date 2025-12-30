@@ -2,11 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
-	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/adk-saugat/stash/utils"
 )
@@ -28,16 +24,8 @@ func ProjectConfigFromJSON(data []byte) (*ProjectConfig, error) {
 }
 
 func NewProjectConfig(projectName string, role string) *ProjectConfig{
-
-	projectIdBytes, err := exec.Command("uuidgen").Output()
-	if err != nil {
-		log.Fatal("Error: Could not generate projectId.")
-	}
-	projectId := strings.ToLower(strings.TrimSpace(string(projectIdBytes)))
-
-
 	return &ProjectConfig{
-		ProjectId: string(projectId),
+		ProjectId: utils.GenerateUUID(),
 		ProjectName: projectName,
 		TrackedFile: make([]string, 0),
 		Role: "owner",
@@ -56,18 +44,12 @@ func (pc *ProjectConfig) AddFileToTrack(filesToTrack []string){
 	}
 	projectConfigJSON, err := json.MarshalIndent(pc, "", "    ")
 	if err != nil {
-		log.Fatal("Error: Couldnot convert config to JSON.")
+		log.Fatal("Error: Could not convert config to JSON.")
 	}
 
-	projectConfigFile, err := os.OpenFile("./.stash/projectConfig.json", os.O_WRONLY|os.O_TRUNC, 0644)
+	err = utils.WriteFileData(".stash/projectConfig.json", projectConfigJSON)
 	if err != nil {
-		log.Fatal("Error: Couldnot open config file.")
-	}
-	defer projectConfigFile.Close()
-
-	_, err = projectConfigFile.Write(projectConfigJSON)
-	if err != nil {
-		log.Fatal("Error: Couldnot write config to file.")
+		log.Fatal("Error: Could not write config to file.")
 	}
 }
 
@@ -81,21 +63,14 @@ func (pc *ProjectConfig) isTracked(file string) bool {
 }
 
 func (pc *ProjectConfig) Create(){	
-	projectConfigFile , err := os.Create(".stash/projectConfig.json")
-	if err != nil {
-		log.Fatal("Error: Couldnot create config file.")
-	}
-
 	projectConfigJSON, err := json.MarshalIndent(pc, "", "    ")
 	if err != nil {
-		log.Fatal("Error: Couldnot convert config to JSON.")
+		log.Fatal("Error: Could not convert config to JSON.")
 	}
 
-	_, err = projectConfigFile.Write(projectConfigJSON)
+	err = utils.WriteFileData(".stash/projectConfig.json", projectConfigJSON)
 	if err != nil {
-		log.Fatal("Error: Couldnot write config to file.")
+		log.Fatal("Error: Could not write config to file.")
 	}
-
-	fmt.Println("Project config file created!")
 }
 

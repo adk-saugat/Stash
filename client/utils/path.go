@@ -15,3 +15,10 @@ func GetCurrentDirName() string {
 	return currDirSlice[len(currDirSlice)-1]
 }
 
+func GetHomeDir() string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal("Error: Could not access home directory.")
+	}
+	return homeDir
+}

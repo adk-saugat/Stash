@@ -3,43 +3,32 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	emailVerifier "github.com/AfterShip/email-verifier"
+	"github.com/adk-saugat/stash/models"
 	"github.com/adk-saugat/stash/utils"
 )
 
 type ConfigCommand struct{}
 
-type configUser struct {
-	Username  string `json:"username"`
-	UserEmail string `json:"userEmail"`
-}
-
 func (c *ConfigCommand) Name() string {
-	 return "config" 
+	return "config"
 }
 
-func (c *ConfigCommand) Description() string { 
-	return "Configure username and email globally" 
+func (c *ConfigCommand) Description() string {
+	return "Configure username and email globally"
 }
 
 func (c *ConfigCommand) Run(args []string) error {
 	username := utils.GetArg(1, "Error: Username not found.")
 	userEmail := utils.GetArg(2, "Error: User Email not found.")
 
-	isValid := emailVerifier.IsAddressValid(userEmail)
-	if !isValid{
-		return fmt.Errorf("Could not validate %v as email.", userEmail)
+	if !emailVerifier.IsAddressValid(userEmail) {
+		return fmt.Errorf("could not validate %q as email", userEmail)
 	}
-	homeDir, _ := os.UserHomeDir()
+	fmt.Println("Email validated.")
 
-	stashConfig, err := os.Create(homeDir + "/.stashConfig")
-	if err != nil {
-		return err
-	}
-
-	config := configUser{
+	config := models.GlobalUserConfig{
 		Username:  username,
 		UserEmail: userEmail,
 	}
@@ -49,9 +38,11 @@ func (c *ConfigCommand) Run(args []string) error {
 		return err
 	}
 
-	if _, err = stashConfig.WriteString(string(configData));err != nil {
+	err = utils.WriteFileData(utils.GetHomeDir()+"/.stashConfig", configData)
+	if err != nil {
 		return err
 	}
 
+	fmt.Println("Configuration saved.")
 	return nil
 }

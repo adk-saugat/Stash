@@ -14,12 +14,10 @@ func (c *StoreCommand) Name() string        { return "store" }
 func (c *StoreCommand) Description() string { return "Store current changes" }
 
 func (c *StoreCommand) Run(args []string) error {
-	_, err := utils.RequireArg(args, 0, "store message")
+	storeMessage, err := utils.RequireArg(args, 0, "store message")
 	if err != nil {
 		return fmt.Errorf("%w\n\tUsage: stash store <message>", err)
 	}
-
-	// storeMessage := args[0]
 
 	projectConfigBytes, err := utils.GetFileData(".stash/projectConfig.json")
 	if err != nil {
@@ -30,6 +28,18 @@ func (c *StoreCommand) Run(args []string) error {
 	if err != nil {
 		return fmt.Errorf("could not parse config")
 	}
+	fmt.Println("Project configuration loaded.")
+
+	configByte, err := utils.GetFileData(utils.GetHomeDir() + "/.stashConfig")
+	if err != nil {
+		return fmt.Errorf("could not read user config. Run 'stash config <username> <email>' first")
+	}
+
+	config, err := models.GlobalUserConfigFromJSON(configByte)
+	if err != nil {
+		return fmt.Errorf("could not parse user config")
+	}
+	fmt.Println("User configuration loaded.")
 
 	storeFiles := make([]models.File, 0)
 	for _, filePath := range projectConfig.TrackedFile {
@@ -43,10 +53,15 @@ func (c *StoreCommand) Run(args []string) error {
 		storeFile := models.NewFile(filePath, fileHash, fileContent)
 		storeFiles = append(storeFiles, storeFile)
 	}
+	fmt.Println("Tracked files processed.")
 
-	fmt.Printf("Stored %d files\n", len(storeFiles))
+	storeData := models.NewStore(projectConfig.ProjectId, config.UserEmail, storeMessage, storeFiles)
 
-	// TODO: Create a store struct and add the store to the .stash.
-	
+	err = storeData.Create()
+	if err != nil {
+		return fmt.Errorf("could not create store: %w", err)
+	}
+
+	fmt.Println("Store created.")
 	return nil
 }
