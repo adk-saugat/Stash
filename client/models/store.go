@@ -31,6 +31,15 @@ type Store struct {
 	Files     []File    `json:"files"`
 }
 
+func StoreFromJSON(data []byte) (*Store, error) {
+	var store Store
+	err := json.Unmarshal(data, &store)
+	if err != nil {
+		return nil, err
+	}
+	return &store, nil
+}
+
 func NewStore(projectId, author, message string, files []File) Store {
 	return Store{
 		StoreId:   utils.GenerateUUID(),
@@ -58,4 +67,35 @@ func (store *Store) Create() error {
 	}
 
 	return utils.WriteFileData("./.stash/stores/"+store.StoreId+".json", storeJSON)
+}
+
+func GetLatestStore() (*Store, error) {
+	entries, err := os.ReadDir("./.stash/stores")
+	if err != nil {
+		return nil, err
+	}
+
+	if len(entries) == 0 {
+		return nil, nil // No stores yet
+	}
+
+	var latestStore *Store
+	for _, entry := range entries {
+		storeData, err := os.ReadFile("./.stash/stores/" + entry.Name())
+		if err != nil {
+			return nil, err
+		}
+
+		store, err := StoreFromJSON(storeData)
+		if err != nil {
+			return nil, err
+		}
+
+		// Compare: if no latest yet, or this store is newer
+		if latestStore == nil || store.Date.After(latestStore.Date) {
+			latestStore = store
+		}
+	}
+
+	return latestStore, nil
 }

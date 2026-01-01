@@ -55,6 +55,11 @@ func (c *StoreCommand) Run(args []string) error {
 	}
 	fmt.Println("Tracked files processed.")
 
+	latestStore, _ := models.GetLatestStore()
+	if latestStore != nil && !hasChanges(storeFiles, latestStore.Files) {
+		return fmt.Errorf("no changes to store")
+	}
+
 	storeData := models.NewStore(projectConfig.ProjectId, config.UserEmail, storeMessage, storeFiles)
 
 	err = storeData.Create()
@@ -64,4 +69,26 @@ func (c *StoreCommand) Run(args []string) error {
 
 	fmt.Println("Store created.")
 	return nil
+}
+
+func hasChanges(storeFiles []models.File, latestStoreFiles []models.File) bool {
+	// Different number of files means changes
+	if len(storeFiles) != len(latestStoreFiles) {
+		return true
+	}
+
+	// Build hash map from latest store
+	lastHashes := make(map[string]string)
+	for _, f := range latestStoreFiles {
+		lastHashes[f.Path] = f.Hash
+	}
+
+	// Check if any file hash changed
+	for _, f := range storeFiles {
+		if lastHashes[f.Path] != f.Hash {
+			return true
+		}
+	}
+
+	return false
 }

@@ -1,7 +1,3 @@
-from db import get_users
-
-users = get_users()
-
-for user in users:
-    print(user["name"])
-
+print("main")
+print("hello, world")
+print("bye bye")

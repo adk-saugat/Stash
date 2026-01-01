@@ -1,0 +1,14 @@
+{
+    "store_id": "2dd76889-4996-4dd4-b32b-252036543170",
+    "project_id": "a81ab477-c5e6-4518-b3cc-fce5537ad94d",
+    "author": "saugat@gmail.com",
+    "message": "second store",
+    "date": "2025-12-31T19:32:36.453656-06:00",
+    "files": [
+        {
+            "path": "main.py",
+            "hash": "89cc3dc50d9044a86e1ec981aad580613b700a8d6f1d332103e8857b5245d7a2",
+            "content": "cHJpbnQoIm1haW4iKQpwcmludCgiaGVsbG8sIHdvcmxkIikKCg=="
+        }
+    ]
+}
