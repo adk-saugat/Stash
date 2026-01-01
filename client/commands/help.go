@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/adk-saugat/stash/core"
+	"github.com/adk-saugat/stash/models"
 )
 
 type HelpCommand struct {
@@ -18,6 +19,9 @@ func (c *HelpCommand) Name() string        { return "help" }
 func (c *HelpCommand) Description() string { return "Show available commands" }
 
 func (c *HelpCommand) Run(args []string) error {
+	stores, _ := models.GetAllStores()
+	fmt.Println(stores)
+	
 	fmt.Println("Stash - A simple version control system")
 	fmt.Println()
 	fmt.Println("Usage: stash <command> [arguments]")

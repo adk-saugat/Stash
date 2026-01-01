@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/adk-saugat/stash/utils"
@@ -67,6 +68,34 @@ func (store *Store) Create() error {
 	}
 
 	return utils.WriteFileData("./.stash/stores/"+store.StoreId+".json", storeJSON)
+}
+
+func GetAllStores() ([]Store, error) {
+	entries, err := os.ReadDir("./.stash/stores")
+	if err != nil {
+		return nil, err
+	}
+
+	var stores []Store
+	for _, entry := range entries {
+		storeData, err := os.ReadFile("./.stash/stores/" + entry.Name())
+		if err != nil {
+			return nil, err
+		}
+
+		store, err := StoreFromJSON(storeData)
+		if err != nil {
+			return nil, err
+		}
+
+		stores = append(stores, *store)
+	}
+
+	sort.Slice(stores, func(i, j int) bool {
+		return stores[i].Date.After(stores[j].Date)
+	})
+	
+	return stores, nil
 }
 
 func GetLatestStore() (*Store, error) {
