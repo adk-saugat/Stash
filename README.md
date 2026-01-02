@@ -1,143 +1,145 @@
-# 📦 Stash
+# Stash
 
-A lightweight, fully CLI-based version control system built from scratch in Go.
+A lightweight version control system built in Go. Track files, store snapshots, and view your project history — all from the command line.
 
-## Overview
+## Features
 
-Stash is a simple yet powerful tool that lets you track file changes, create snapshots, and push to a remote server — all from the command line. No GUI, no external dependencies, just a clean terminal experience.
+- **Simple CLI** — Intuitive commands inspired by Git
+- **File Tracking** — Watch individual files or entire projects
+- **SHA-256 Hashing** — Detect changes efficiently without storing duplicates
+- **Store History** — View a tree-style log of all your snapshots
+- **Global Config** — Set your identity once, use it everywhere
 
-## ✨ Features
-
-- **100% CLI** — Everything happens in the terminal, no GUI required
-- **Track Files** — Watch specific files or entire directories for changes
-- **Create Snapshots** — Store the current state of tracked files
-- **Global Config** — Set your username and email once, use everywhere
-- **Project-based** — Each project gets its own `.stash` folder
-- **Remote Sync** — Push and pull changes to a remote server directly from the CLI
-
-## 🚀 Installation
+## Installation
 
 ```bash
-# Download the repository and navigate to it
-cd stash/client
+# Clone the repository
+git clone https://github.com/adk-saugat/stash.git
+cd stash
 
-# Build the CLI
-go build -o stash .
+# Build the binary
+make build
 
-# Move to PATH (optional)
+# (Optional) Move to PATH
 sudo mv stash /usr/local/bin/
 ```
 
-## 📖 Usage
-
-### Initialize a Project
+## Quick Start
 
 ```bash
-# Create a new stash project in current directory
+# 1. Configure your identity (one-time setup)
+stash config <username> <email>
+
+# 2. Initialize a new project
+cd your-project
 stash create
 
-# Or with a custom project name
-stash create my-project
+# 3. Add files to track
+stash watch main.py          # Single file
+stash watch all              # Everything
+
+# 4. Store a snapshot
+stash store "initial commit"
+
+# 5. View history
+stash log
 ```
 
-### Configure User (Global)
+## Commands
 
-```bash
-# Set your username
-stash config user.name "Your Name"
+| Command | Description |
+|---------|-------------|
+| `stash config <username> <email>` | Set global username and email |
+| `stash create [project-name]` | Initialize a new stash repository |
+| `stash watch <file\|all>` | Add files to track |
+| `stash store <message>` | Create a new snapshot |
+| `stash log` | Show store history |
+| `stash help` | List all available commands |
 
-# Set your email
-stash config user.email "you@example.com"
-```
+## How It Works
 
-### Track Files
+### Project Structure
 
-```bash
-# Track a specific file
-stash watch main.go
-
-# Track all files in the project
-stash watch all
-```
-
-### Store Changes
-
-```bash
-# Create a snapshot with a message
-stash store "Initial commit"
-```
-
-### Authentication
-
-```bash
-# Login to remote server
-stash login
-```
-
-### Get Help
-
-```bash
-# List all available commands
-stash help
-```
-
-## 📁 Project Structure
+When you run `stash create`, a `.stash` folder is created:
 
 ```
-.stash/
-├── projectConfig.json    # Project configuration
-└── store/                # Stored snapshots
+your-project/
+├── .stash/
+│   ├── projectConfig.json    # Project metadata & tracked files
+│   └── stores/               # Snapshot history
+│       ├── abc123...json
+│       └── def456...json
+└── your-files...
 ```
 
-### projectConfig.json
+### Change Detection
+
+Stash uses SHA-256 hashes to detect file changes. When you run `stash store`:
+
+1. Each tracked file is hashed
+2. Hashes are compared with the latest store
+3. If nothing changed, the store is blocked
+4. If changes exist, a new snapshot is created
+
+### Store Format
+
+Each store is a JSON file containing:
 
 ```json
 {
-  "projectId": "uuid",
-  "projectName": "my-project",
-  "trackedFile": ["main.go", "src/app.go"],
-  "role": "owner"
+    "store_id": "680e4cd0-6b68-4244-b2de-9bfb25d80045",
+    "project_id": "f779a6dc-f4e4-474c-91a3-329a3d917f05",
+    "author": "you@email.com",
+    "message": "your commit message",
+    "date": "2025-01-02T10:30:00Z",
+    "files": [
+        {
+            "path": "main.py",
+            "hash": "a1b2c3...",
+            "content": "base64-encoded-content"
+        }
+    ]
 }
 ```
 
-## 🛠️ Commands
+## Example Workflow
 
-| Command                  | Description                     |
-| ------------------------ | ------------------------------- |
-| `create [name]`          | Create a new stash project      |
-| `config <key> [value]`   | Get or set global configuration |
-| `watch <file\|dir\|all>` | Add files to track              |
-| `store <message>`        | Store current changes           |
-| `login`                  | Authenticate with remote server |
-| `push`                   | Push changes to remote server   |
-| `pull`                   | Pull changes from remote server |
-| `help`                   | Show available commands         |
+```bash
+$ stash create myproject
+Repository initialized.
+Project configuration created.
 
-## 🗺️ Roadmap
+$ stash watch all
+Project configuration loaded.
+Files discovered.
+Watch list updated.
 
-| Status | Feature                     |
-| :----: | --------------------------- |
-|   ✅   | Project initialization      |
-|   ✅   | File tracking               |
-|   ✅   | Store snapshots             |
-|   ✅   | Global user config          |
-|   🔲   | View diff between snapshots |
-|   🔲   | Push to remote server       |
-|   🔲   | Pull from remote server     |
-|   🔲   | Branching support           |
-|   🔲   | Merge conflicts             |
+$ stash store "initial commit"
+Project configuration loaded.
+User configuration loaded.
+Tracked files processed.
+Store created.
 
-## 🤝 Contributing
+$ stash log
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+Store History (1 stores)
+─────────────────────────
 
-## 📄 License
+● 680e4cd0 - initial commit (just now) <you@email.com>
+```
 
-MIT License — feel free to use this project however you like.
+## Roadmap
 
----
+- [ ] `stash login` — Authenticate using config and password
+- [ ] `stash logout` — Log out (clear local session)
+- [ ] `stash join <project-id>` — Join an existing project
+- [ ] `stash share` — Upload local stores to server
+- [ ] `stash fetch` — Download remote stores from server
+
+## Requirements
+
+- Go 1.21+
 
 ## Author
 
-**Saugat Adhikari**  
-GitHub: [@adk-saugat](https://github.com/adk-saugat)
+**Saugat Adhikari** — [@adk-saugat](https://github.com/adk-saugat)
