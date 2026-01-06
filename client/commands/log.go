@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/adk-saugat/stash/models"
+	"github.com/adk-saugat/stash/client/models"
 )
 
 type LogCommand struct{}

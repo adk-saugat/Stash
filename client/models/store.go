@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/adk-saugat/stash/utils"
+	"github.com/adk-saugat/stash/client/utils"
 )
 
 type File struct {

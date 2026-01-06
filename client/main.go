@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/adk-saugat/stash/commands"
-	"github.com/adk-saugat/stash/core"
+	"github.com/adk-saugat/stash/client/commands"
+	"github.com/adk-saugat/stash/client/core"
 )
 
 func main() {

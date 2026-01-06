@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/adk-saugat/stash/models"
-	"github.com/adk-saugat/stash/utils"
+	"github.com/adk-saugat/stash/client/models"
+	"github.com/adk-saugat/stash/client/utils"
 )
 
 type StoreCommand struct{}

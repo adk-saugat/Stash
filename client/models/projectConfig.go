@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/adk-saugat/stash/utils"
+	"github.com/adk-saugat/stash/client/utils"
 )
 
 type ProjectConfig struct{

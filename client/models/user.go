@@ -1,16 +1,22 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/adk-saugat/stash/client/utils"
+)
 
 type User struct{
-	ID 			int64 	`json:"id"`
+	ID 			string 	`json:"id"`
+	Username 	string	`json:"username"`
 	Email 		string 	`json:"email"`
 	Password 	string	`json:"password"`	
 }
 
-func NewUser(id int64, email string, password string) *User {
+func NewUser(username, email, password string) *User {
 	return &User{
-		ID:       id,
+		ID:       utils.GenerateUUID(),
+		Username: username,
 		Email:    email,
 		Password: password,
 	}
@@ -18,6 +24,7 @@ func NewUser(id int64, email string, password string) *User {
 
 func (user *User) LoginUser(){
 	fmt.Println("user logged in")
+	fmt.Println(user)
 }
 
 func (user *User) RegisterUser(){

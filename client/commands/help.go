@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
-	"github.com/adk-saugat/stash/core"
-	"github.com/adk-saugat/stash/models"
+	"github.com/adk-saugat/stash/client/core"
+	"github.com/adk-saugat/stash/client/models"
 )
 
 type HelpCommand struct {
