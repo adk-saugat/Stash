@@ -42,9 +42,17 @@ func LoginUser(ctx *gin.Context) {
 		return
 	}
 
+	// Generate JWT token
+	token, err := utils.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Logged in successfully",
 		"email":   user.Email,
+		"token":   token,
 	})
 }
 
@@ -82,8 +90,16 @@ func RegisterUser(ctx *gin.Context) {
 		return
 	}
 
+	// Generate JWT token
+	token, err := utils.GenerateToken(newUser.ID, newUser.Email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"message": "Account created successfully",
 		"email":   req.Email,
+		"token":   token,
 	})
 }

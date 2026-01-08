@@ -21,11 +21,10 @@ func (u *User) FindByEmail(email string) error {
 	).Scan(&u.ID, &u.Username, &u.Email, &u.Password)
 }
 
-// Create inserts a new user into the database
+// Create inserts a new user into the database and sets the ID
 func (u *User) Create() error {
-	_, err := database.Pool.Exec(context.Background(),
-		"INSERT INTO users (username, email, password) VALUES ($1, $2, $3)",
+	return database.Pool.QueryRow(context.Background(),
+		"INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id",
 		u.Username, u.Email, u.Password,
-	)
-	return err
+	).Scan(&u.ID)
 }
