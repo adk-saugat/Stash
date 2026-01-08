@@ -16,6 +16,7 @@ var ErrUserNotFound = errors.New("user not found")
 type AuthResponse struct {
 	Message string `json:"message"`
 	Email   string `json:"email"`
+	Token   string `json:"token"`
 	Error   string `json:"error"`
 }
 

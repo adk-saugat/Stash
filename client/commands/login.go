@@ -18,6 +18,11 @@ func (c *LoginCommand) Name() string        { return "login" }
 func (c *LoginCommand) Description() string { return "Login to your account" }
 
 func (c *LoginCommand) Run(args []string) error {
+	// Check if project exists
+	if !utils.FileExists(".stash/projectConfig.json") {
+		return fmt.Errorf("no stash project found. Run 'stash create' first")
+	}
+
 	configBytes, err := utils.GetFileData(utils.GetHomeDir() + "/.stashConfig")
 	if err != nil {
 		return fmt.Errorf("could not read config. Run 'stash config <username> <email>' first")
@@ -56,6 +61,10 @@ func (c *LoginCommand) Run(args []string) error {
 			if err != nil {
 				return err
 			}
+			// Save session
+			if err := models.SaveSession(authResp.Token, authResp.Email); err != nil {
+				return fmt.Errorf("could not save session: %w", err)
+			}
 			fmt.Println(authResp.Message)
 		} else {
 			fmt.Println("Login cancelled.")
@@ -65,6 +74,11 @@ func (c *LoginCommand) Run(args []string) error {
 
 	if err != nil {
 		return err
+	}
+
+	// Save session
+	if err := models.SaveSession(authResp.Token, authResp.Email); err != nil {
+		return fmt.Errorf("could not save session: %w", err)
 	}
 
 	fmt.Println(authResp.Message)
