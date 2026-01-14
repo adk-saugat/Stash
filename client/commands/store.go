@@ -41,6 +41,11 @@ func (c *StoreCommand) Run(args []string) error {
 	}
 	fmt.Println("User configuration loaded.")
 
+	// Check if any files are being tracked
+	if len(projectConfig.TrackedFile) == 0 {
+		return fmt.Errorf("no files being tracked. Run 'stash watch <files>' first")
+	}
+
 	storeFiles := make([]models.File, 0)
 	for _, filePath := range projectConfig.TrackedFile {
 		fileData, err := utils.GetFileData(filePath)

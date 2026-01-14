@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/adk-saugat/stash/server/internal/models"
@@ -86,6 +87,7 @@ func RegisterUser(ctx *gin.Context) {
 	}
 
 	if err := newUser.Create(); err != nil {
+		fmt.Printf("Error creating user: %v\n", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
 		return
 	}

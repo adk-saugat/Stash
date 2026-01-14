@@ -18,6 +18,7 @@ func main() {
 	registry.Register(commands.NewHelpCommand(registry))
 	registry.Register(&commands.ConfigCommand{})
 	registry.Register(&commands.LogCommand{})
+	registry.Register(&commands.ShareCommand{})
 
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: stash <command> [args]")

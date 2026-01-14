@@ -36,3 +36,26 @@ func SaveSession(token, email string) error {
 	return utils.WriteFileData(".stash/session.json", data)
 }
 
+// LoadSession loads the session from .stash/session.json
+func LoadSession() (*Session, error) {
+	data, err := os.ReadFile(".stash/session.json")
+	if err != nil {
+		return nil, err
+	}
+
+	var session Session
+	if err := json.Unmarshal(data, &session); err != nil {
+		return nil, err
+	}
+
+	return &session, nil
+}
+
+// IsSessionValid checks if session exists and is not expired
+func IsSessionValid() bool {
+	session, err := LoadSession()
+	if err != nil {
+		return false
+	}
+	return time.Now().Before(session.ExpiresAt)
+}

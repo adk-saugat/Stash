@@ -1,4 +1,3 @@
-print("main")
-print("hello, world")
-print("bye bye")
-print("hello , new day")
+print("hello main")
+print("hello there")
+print("bye main")
